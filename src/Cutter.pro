@@ -77,11 +77,13 @@ unix:CUTTER_ENABLE_JUPYTER|macx:CUTTER_ENABLE_JUPYTER {
         LIBS += -F$$PYTHON_FRAMEWORK_DIR -framework Python
         DEFINES += MACOS_PYTHON_FRAMEWORK_BUNDLED
     } else {
-        CONFIG += link_pkgconfig
-        !packagesExist(python3) {
-            error("ERROR: Python 3 could not be found. Make sure it is available to pkg-config.")
+        system(type python3-config) {
+            LIBS += $$system(python3-config --libs)
+            TMP = $$system(python3-config --includes)
+            INCLUDEPATH += $$replace(TMP, "-I", "")
+        } else {
+            error("ERROR: Python 3 could not be found. Make sure it is available to python3-config.")
         }
-        PKGCONFIG += python3
     }
 }
 
